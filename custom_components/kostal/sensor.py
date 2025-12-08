@@ -14,7 +14,10 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_HOST,
     CONF_MONITORED_CONDITIONS,
+    UnitOfElectricCurrent,
+    UnitOfElectricPotential,
     UnitOfEnergy,
+    UnitOfPower,
 )
 
 from homeassistant.components.sensor import (
@@ -69,6 +72,18 @@ class PikoSensor(SensorEntity):
         if self._unit_of_measurement == UnitOfEnergy.KILO_WATT_HOUR:
             self._attr_device_class = SensorDeviceClass.ENERGY
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
+        elif self._unit_of_measurement in (
+            UnitOfElectricCurrent.AMPERE,
+            UnitOfElectricPotential.VOLT,
+            UnitOfPower.WATT,
+        ):
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            if self._unit_of_measurement == UnitOfElectricCurrent.AMPERE:
+                self._attr_device_class = SensorDeviceClass.CURRENT
+            elif self._unit_of_measurement == UnitOfElectricPotential.VOLT:
+                self._attr_device_class = SensorDeviceClass.VOLTAGE
+            elif self._unit_of_measurement == UnitOfPower.WATT:
+                self._attr_device_class = SensorDeviceClass.POWER
 
     @property
     def name(self):
